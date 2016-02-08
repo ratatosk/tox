@@ -1,16 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-
-module Lib
-       ( Sound
-       , Track
-       , Sample(..)
-       , render
+module Tox.IO
+       ( render
        , toWav44k16b
-       , limit
-       , switchAfter
-       , glue
        ) where
 
+import Tox.Types
 
 import Control.Monad
 import Control.Applicative
@@ -48,13 +41,6 @@ instance Quantized Int16 where
                | x < -0.999 = minLevel16
                | otherwise = (fromSample x, False)
 
--- ^ Convenience type for unlimited tracks
-type Sound = SF () Double
-
--- ^ Track type, parametrized with sample type (e.g. Int16), is essentially a signal function
--- returning samples and stop event.
-type Track = SF () (Double, Event ())
-
 -- ^ Render track to saple data.
 render :: Track -> Int -> IO (Audio Int16, Double)
 render track sampleRate = do
@@ -84,16 +70,3 @@ toWav44k16b t p = do
     (wavData, clipRatio) <- render t 44100
     putStrLn $ "Clipped ratio: " ++ show clipRatio
     exportFile p wavData
-
--- ^ Convenience function to limit sound length
-limit :: Double -> Sound -> Track
-limit d s = s &&& after d ()
-
--- ^ Convenience funciton to switch to other sound after some time
-switchAfter :: Double -> Sound -> Sound -> Sound
-switchAfter delay former latter = switch (former &&& after delay ()) (const latter)
-
--- ^ Convenience function to switch through list of sounds with specified lengths
-glue :: [(Double, Sound)] -> Sound
-glue [] = constant 0
-glue ((len, snd):rest) = switchAfter len snd (glue rest)

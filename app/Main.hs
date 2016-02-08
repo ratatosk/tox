@@ -4,7 +4,9 @@ module Main where
 
 import FRP.Yampa
 
-import Lib
+import Tox.Types
+import Tox.IO
+import Tox.Util
 
 mkSine :: Double -> Sound
 mkSine freq = proc () -> do
