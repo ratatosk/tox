@@ -18,6 +18,7 @@ library
   exposed-modules:     Tox.IO
                      , Tox.Types
                      , Tox.Util
+                     , Tox.Notes
   build-depends:       base >= 4.7 && < 5
                      , array
                      , Yampa
