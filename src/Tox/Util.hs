@@ -22,3 +22,7 @@ switchAfter delay former latter = switch (former &&& after delay ()) (const latt
 glue :: [(Double, Sound)] -> Sound
 glue [] = constant 0
 glue ((len, snd):rest) = switchAfter len snd (glue rest)
+
+-- ^ Track that ends instantaneously
+emptyTrack :: Track
+emptyTrack = constant 0 &&& after 0 ()

@@ -7,11 +7,12 @@ import FRP.Yampa
 import Tox.Types
 import Tox.IO
 import Tox.Util
+import Tox.Music
 
 mkSine :: Double -> Sound
 mkSine freq = proc () -> do
     t <- time -< ()
-    returnA -< sin (t * freq * 2 * pi)
+    returnA -< 0.5 * sin (t * freq * 2 * pi)
 
 demoSine2 :: Sound
 demoSine2 = proc () -> do
@@ -29,27 +30,27 @@ linearPiece from to len rest = switch (run &&& after len ()) (const rest)
         t <- time -< ()
         returnA -< from + (to - from) * (t / len)
 
-mkEnvelope :: [(Double, Double)] -> Sound
-mkEnvelope ls = run 0 ls
+mkEnvelope :: [(Double, Double)] -> SF () (Double, Event ())
+mkEnvelope ls = run 0 ls &&& after (sum $ map fst ls) ()
   where
     run prev [] = constant prev
     run prev ((len, lvl):rest) = linearPiece prev lvl len (run lvl rest)
 
-envKey :: Sound
+envKey :: SF () (Double, Event ())
 envKey = mkEnvelope [(0.02, 1), (0.08, 0.5), (0.5, 0.3), (0.4, 0)]
 
-mkKeySine :: Double -> Sound
+mkKeySine :: Double -> Track
 mkKeySine freq = proc () -> do
     v <- mkSine freq -< ()
-    e <- envKey -< ()
-    returnA -< v * e
+    (l, ev) <- envKey -< ()
+    returnA -< (v * l, ev)
+
+tracks :: [([Track], Time)]
+tracks = [([mkKeySine 440], 0.5), ([mkKeySine 330], 0.5), ([mkKeySine 220], 1)] --, ([mkKeySine 220], 1.0)]
 
 demoTrack :: Track
-demoTrack = demoData &&& after 10 ()
-
-demoTrack2 :: Track
-demoTrack2 = limit 10 $ glue [(1, constant 0), (1, mkKeySine 440), (1, mkKeySine 660)]
+demoTrack = pPlay tracks
 
 main :: IO ()
 main = do
-    toWav44k16b demoTrack2 "test.wav"
+    toWav44k16b demoTrack "test.wav"
