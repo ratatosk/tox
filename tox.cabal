@@ -19,6 +19,7 @@ library
                      , Tox.Types
                      , Tox.Util
                      , Tox.Notes
+                     , Tox.Mix
                      , Tox.Music
   build-depends:       base >= 4.7 && < 5
                      , array

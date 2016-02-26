@@ -7,7 +7,7 @@ import FRP.Yampa
 import Tox.Types
 import Tox.IO
 import Tox.Util
-import Tox.Music
+import Tox.Mix
 
 mkSine :: Double -> Sound
 mkSine freq = proc () -> do
@@ -49,7 +49,7 @@ tracks :: [([Track], Time)]
 tracks = [([mkKeySine 440], 0.5), ([mkKeySine 330], 0.5), ([mkKeySine 220], 1)] --, ([mkKeySine 220], 1.0)]
 
 demoTrack :: Track
-demoTrack = pPlay tracks
+demoTrack = mix tracks
 
 main :: IO ()
 main = do
