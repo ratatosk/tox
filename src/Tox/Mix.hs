@@ -9,8 +9,6 @@ import Tox.Util
 
 import FRP.Yampa
 
-type TList = [([Track], Time)]
-
 -- TODO: get rid of keepAlive and rename it all
 
 finishes :: SF [(Double, Event ())] [Bool]
