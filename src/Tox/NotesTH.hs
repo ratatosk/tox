@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Tox.NotationTH where
+module Tox.NotesTH where
 
 import Language.Haskell.TH
 
