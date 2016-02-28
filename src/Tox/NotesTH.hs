@@ -9,6 +9,8 @@ import Data.Ratio
 
 import Tox.Notation
 
+-- TODO: factor out Ratio splice.
+
 mkDurationName :: String -> Integer -> Int -> (Name, Integer, Integer)
 mkDurationName c i d =
   let n = mkName (c ++ show i ++ replicate d '\'')

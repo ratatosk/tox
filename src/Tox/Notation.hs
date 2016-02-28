@@ -3,10 +3,14 @@
 module Tox.Notation
        ( PitchClass(..)
        , Octave
+       , Duration
        , freq
        , Note(..)
        , mkNote
        , mkRest
+       , applyBPM
+       , fromDuration
+       , toSchedule
        ) where
 
 import Tox.Types
@@ -15,6 +19,8 @@ import Data.Ratio
 import Language.Haskell.TH
 
 import FRP.Yampa
+
+-- TODO: Maybe Rest shouldn't be note? Rather have Either Note Rest for notation?
 
 -- ^ All 12 notes of octave without ambiguities.
 data PitchClass = C | Cs | D | Ds | E | F | Fs | G | Gs | A | As | B
@@ -50,11 +56,11 @@ p = concat
 
 toSchedule :: [[Note]] -> Schedule Note Duration
 toSchedule [] = []
-toSchedule (n:ns) = (n, maximum (map len n)) : toSchedule ns
+toSchedule (n:ns) = (n, len (head n)) : toSchedule ns
 
-fromIntRatio :: Ratio Int -> Double
-fromIntRatio x = fromIntegral (numerator x) / fromIntegral (denominator x)
+fromDuration :: Int -> Ratio Int -> Double
+fromDuration b x = 240 * fromIntegral (numerator x) / (fromIntegral (denominator x) * fromIntegral b)
 
 -- ^ Apply BPM specified for quarter note.
 applyBPM :: Int -> Schedule a Duration -> Schedule a Time
-applyBPM b = map (\(x, d) -> (x, 1 / fromIntegral b * fromIntRatio (d * 4)))
+applyBPM b = map (\(x, d) -> (x, fromDuration b d))

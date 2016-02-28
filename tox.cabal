@@ -21,6 +21,8 @@ library
                      , Tox.Notation
                      , Tox.Notes
                      , Tox.Mix
+                     , Tox.Envelope
+                     , Tox.Synth
   build-depends:       base >= 4.7 && < 5
                      , array
                      , template-haskell
